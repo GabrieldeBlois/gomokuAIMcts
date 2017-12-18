@@ -14,6 +14,7 @@ public:
 	{
 	}
 
+	// cpy ctor
 	Node(const Node &cp) :
 		state(cp.state),
 		_parent(cp._parent),
@@ -26,7 +27,10 @@ public:
 	}
 
 	// I know its dirty to make a public member like this but its a little school projet btw
+	// so as it is more optimized ...
 	Game::State state;
+
+	// the parent node should be a pointer since reference cannot be null;
 	Node *_parent;
 	std::vector<Node> _child;
 };
