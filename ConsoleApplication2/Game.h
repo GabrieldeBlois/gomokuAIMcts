@@ -32,6 +32,24 @@ public:
 		int player;
 	};
 
+	class Board {
+	public:
+		Board();
+		Board(const Board &);
+		~Board();
+
+		void performMove(const Position p, uint8_t player);
+		uint8_t getBoardAt(const Position p);
+		const t_board &getBoard() const;
+		const std::vector<Position> & const getEmptyPosition() const;
+
+	private:
+		// member variable
+		t_board board;
+		std::vector<Position> emptyPos;
+
+	};
+
 public:
 	Game();
 	~Game();
@@ -45,12 +63,10 @@ public:
 	};
 
 	static Game::STATE checkState(t_board const &tab);
-	static void getEmptyBoardPosition(t_board const & const, std::vector<Position> &);
-	// the board tow play actual game
-	t_board _board = {};
-	std::vector<Position> emptyPos;
 
-	void performMove(State &);
+	// the board tow play actual game
+	Board board;
+
 	Game::STATE simulatePlayout(Node const *) const;
 };
 

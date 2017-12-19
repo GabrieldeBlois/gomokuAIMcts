@@ -15,7 +15,6 @@
 
 Game::Game()
 {
-	getEmptyBoardPosition(_board, emptyPos);
 }
 
 
@@ -108,52 +107,79 @@ Game::STATE Game::checkState(const t_board &tab)
 	return Game::STATE();
 }
 
-void Game::getEmptyBoardPosition(t_board const & const board, std::vector<Position> &tab) {
-	for (uint8_t i = 0; i < Const::TABSIZE; ++i) {
-		for (uint8_t j = 0; j < Const::TABSIZE; ++j) {
-			if (board[i][j] == 0)
-				tab.push_back( {i, j} );
-		}
-	}
-}
-
 // the board to simulate playouts
-static Game::t_board _simboard {};
+static Game::Board _simboard;
 	
 Game::STATE Game::simulatePlayout(Node const *node) const
 {
 	// = with std::array trigger the copy ctor natively
-	_simboard = _board;
+	_simboard = board;
 
-	auto player = TOGGLE_PLAYER(node->state.player);
+	uint8_t player = TOGGLE_PLAYER(node->state.player);
 
 	// populate the simulation board with the tree branch being processed
 	while (node) {
 		Game::State const &st = node->state;
-		_simboard[st.x][st.y] = st.player;
+		_simboard.performMove({ st.x, st.y }, st.player);
 		node = node->_parent;
 	}
 
-	// get all the empty positions of the board
-	std::vector<Position> emptyPosTab = ;
+	// get all empty positions of the board
+	const std::vector<Position> & const emptyPos = _simboard.getEmptyPosition();
 
 	// simulation - - - - - - -
-	while (checkState(_simboard) != Game::STATE::UNDEFINED) {
-		unsigned long test = xorshf96();
-			
+	while (emptyPos.size() > 0) {
+		// next player's turn
+		player = TOGGLE_PLAYER(player);
+
+		// random seed
+		unsigned long test = xorshf96() % emptyPos.size();
+
+		// perform the move
+		_simboard.performMove(emptyPos[test], player);
+
+		auto result = checkState(_simboard.getBoard());
+		if (result != Game::STATE::UNDEFINED)
+			return result;
 	}
 
 	return DRAW;
 }
 
-// write in the board a the right place the number of the player
-// delete the empty position from the vector
-void Game::performMove(Game::State &s) {
-	_board[s.y][s.x] = s.player;
-	emptyPos.erase(std::remove(emptyPos.begin(), emptyPos.end(), Position {s.x, s.y}), emptyPos.end());
-}
-
+// State implementation - -- - - - - - - - - - - - --
 Game::State::State(const State& cp) : x(cp.x), y(cp.y) {}
 
 Game::State::State(int x, int y, int player) : x(x), y(y), player(player) {}
 
+// Board implementation - -- - - - - - - - - - - - --
+Game::Board::Board() : board(t_board()) {
+	// by default, board is empty, so fill the empty position tab with all possible position
+	for (int i = 0; i < Const::TABSIZE; ++i) {
+		for (int j = 0; j < Const::TABSIZE; ++j) {
+			emptyPos.push_back({ j, i });
+		}
+	}
+}
+
+Game::Board::Board(const Board &cp) : board(cp.board), emptyPos(emptyPos) {}
+
+Game::Board::~Board() {}
+
+// write in the board a the right place the number of the player
+// delete the empty position from the vector
+void Game::Board::performMove(const Position p, uint8_t player) {
+	board[p.y][p.x] = player;
+	emptyPos.erase(std::remove(emptyPos.begin(), emptyPos.end(), p), emptyPos.end());
+}
+
+uint8_t Game::Board::getBoardAt(const Position p) {
+	return board[p.y][p.x];
+}
+
+const Game::t_board& Game::Board::getBoard() const {
+	return board;
+}
+
+const std::vector<Position> & const Game::Board::getEmptyPosition() const {
+	return emptyPos;
+}
