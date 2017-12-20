@@ -34,7 +34,7 @@ public:
 		void performMove(const Position p, uint8_t player);
 		uint8_t getBoardAt(const Position p);
 		const t_board &getBoard() const;
-		const std::vector<Position> & const getEmptyPosition() const;
+		const std::vector<Position> & getEmptyPosition() const;
 
 		bool operator==(const Position&) const;
 		bool operator!=(const Position&) const;
@@ -52,14 +52,10 @@ public:
 
 
 	static STATE checkState(t_board const &tab);
-	void dumpBoard(const t_board& b)  const;
+	void dumpBoard(const t_board& b) const;
 
 	// the board tow play actual game
 	Board board;
 
 	STATE simulatePlayout(Node const *) const;
 };
-
-bool operator==(const Position& a, const Position& b) {
-	return a.x == b.x && a.y == b.y;
-}

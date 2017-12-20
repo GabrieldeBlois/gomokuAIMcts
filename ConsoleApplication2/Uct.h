@@ -27,7 +27,7 @@ public:
 			return result;
 
 		double savedUctValue = 0;
-		for (auto c : node._child) {
+		/*for (auto c : node._child) {
 			double tmpDPrime = 0;
 			if ((tmpDPrime = uctValue(parentVisit, c.getWinScore(), c.getVisitCount())) > savedUctValue) {
 				if (tmpDPrime == std::numeric_limits<int>::max())
@@ -35,7 +35,18 @@ public:
 				savedUctValue = tmpDPrime;
 				result = c;
 			}
+		}*/
+
+		for (std::vector<Node>::iterator it = node._child.begin(); it != node._child.end(); ++it) {
+			double tmpDPrime = 0;
+			if ((tmpDPrime = uctValue(parentVisit, it->getWinScore(), it->getVisitCount())) > savedUctValue) {
+				if (tmpDPrime == std::numeric_limits<int>::max())
+					return *it;
+				savedUctValue = tmpDPrime;
+				result = *it;
+			}
 		}
+
 		return result;
 	}
 };

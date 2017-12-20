@@ -56,10 +56,10 @@ static inline uint8_t checkForWin(const std::array<uint8_t, Const::TABSIZE> &tab
 STATE Game::checkState(const t_board &tab)
 {
 	for (uint8_t i = 0; i < Const::TABSIZE_DEVIDED; ++i) {
-		diag0 = { {UINT8_MAX} };
-		diag1 = { {UINT8_MAX} };
-		diag2 = { {UINT8_MAX} };
-		diag3 = { {UINT8_MAX} };
+		diag0 = {  };
+		diag1 = {  };
+		diag2 = {  };
+		diag3 = {  };
 	}
 	uint8_t resultWin = 0;
 
@@ -133,7 +133,9 @@ STATE Game::simulatePlayout(Node const *node) const
 	}
 
 	// get all empty positions of the board
-	const std::vector<Position> & const emptyPos = _simboard.getEmptyPosition();
+	const std::vector<Position> & emptyPos = _simboard.getEmptyPosition();
+
+	//auto counter = 0;
 
 	// simulation - - - - - - -
 	while (emptyPos.size() > 0) {
@@ -149,6 +151,9 @@ STATE Game::simulatePlayout(Node const *node) const
 		auto result = checkState(_simboard.getBoard());
 		if (result != STATE::IN_PROGRESS)
 			return result;
+		//if (counter > 20)
+		//	return STATE::IN_PROGRESS;
+		//++counter;
 	}
 
 	return DRAW;
@@ -183,7 +188,7 @@ const Game::t_board& Game::Board::getBoard() const {
 	return board;
 }
 
-const std::vector<Position> & const Game::Board::getEmptyPosition() const {
+const std::vector<Position> & Game::Board::getEmptyPosition() const {
 	return emptyPos;
 }
 
@@ -195,4 +200,12 @@ bool Game::Board::operator==(const Position &p) const
 bool Game::Board::operator!=(const Position &p) const
 {
 	return !(p.x == x && p.y == y);
+}
+
+bool operator==(const Position& a, const Position& b) {
+	return a.x == b.x && a.y == b.y;
+}
+
+bool operator!=(const Position& a, const Position& b) {
+	return a.x != b.x && a.y != b.y;
 }

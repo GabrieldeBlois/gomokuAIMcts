@@ -27,7 +27,7 @@ public:
 
 			// expansion
 			if (targetNode.state.state == STATE::IN_PROGRESS)
-				expandNode(targetNode, g);
+				expandNode(targetNode, game);
 
 			// simulation
 			if (targetNode._child.size() > 0)
