@@ -28,6 +28,8 @@ static Game::t_boardDivided diag1 = { { UINT8_MAX } };
 static Game::t_boardDivided diag2 = { { UINT8_MAX } };
 static Game::t_boardDivided diag3 = { { UINT8_MAX } };
 
+static Game::t_boardSide verticalC {};
+
 // actual is the currently winning player (as index 1 or 2)
 // UINT8MAX is to avoid processing some unasigned values as long as some diagonals do not take one array of legnth (like \0 for strings)
 static inline uint8_t checkForWin(const std::array<uint8_t, Const::TABSIZE> &tab) {
@@ -51,7 +53,7 @@ static inline uint8_t checkForWin(const std::array<uint8_t, Const::TABSIZE> &tab
 	return 0;
 }
 
-Game::STATE Game::checkState(const t_board &tab)
+STATE Game::checkState(const t_board &tab)
 {
 	for (uint8_t i = 0; i < Const::TABSIZE_DEVIDED; ++i) {
 		diag0 = { {UINT8_MAX} };
@@ -81,6 +83,15 @@ Game::STATE Game::checkState(const t_board &tab)
 
 			diag0[diagIncr][i] = 1;
 		}
+
+		for (int j = 0; j < Const::TABSIZE; ++j) {
+			verticalC[j] = tab[j][i];
+		}
+
+		// check for win on columns
+		resultWin |= checkForWin(verticalC);
+		
+		// check for win on rows
 		resultWin |= checkForWin(tab[i]);
 	}
 
@@ -92,25 +103,22 @@ Game::STATE Game::checkState(const t_board &tab)
 		resultWin |= checkForWin(diag3[i]);
 	}
 
+	return static_cast<STATE>(resultWin);
+}
+
+void Game::dumpBoard(const Game::t_board &b) const {
 	for (auto i = 0; i < Const::TABSIZE; ++i) {
 		for (auto j = 0; j < Const::TABSIZE; ++j) {
-			std::cout << static_cast<int>(tab[i][j]) << " ";
+			std::cout << static_cast<int>(b[i][j]) << " ";
 		}
 		std::cout << std::endl;
 	}
-
-	if (resultWin != 0)
-		std::cout << "win !!!!!!! - - - - - " << static_cast<int>(resultWin) << std::endl;
-
-	system("pause");
-
-	return Game::STATE();
 }
 
 // the board to simulate playouts
 static Game::Board _simboard;
 	
-Game::STATE Game::simulatePlayout(Node const *node) const
+STATE Game::simulatePlayout(Node const *node) const
 {
 	// = with std::array trigger the copy ctor natively
 	_simboard = board;
@@ -118,8 +126,8 @@ Game::STATE Game::simulatePlayout(Node const *node) const
 	uint8_t player = TOGGLE_PLAYER(node->state.player);
 
 	// populate the simulation board with the tree branch being processed
-	while (node) {
-		Game::State const &st = node->state;
+	while (node->_parent) {
+		State const &st = node->state;
 		_simboard.performMove({ st.x, st.y }, st.player);
 		node = node->_parent;
 	}
@@ -139,23 +147,18 @@ Game::STATE Game::simulatePlayout(Node const *node) const
 		_simboard.performMove(emptyPos[test], player);
 
 		auto result = checkState(_simboard.getBoard());
-		if (result != Game::STATE::UNDEFINED)
+		if (result != STATE::IN_PROGRESS)
 			return result;
 	}
 
 	return DRAW;
 }
 
-// State implementation - -- - - - - - - - - - - - --
-Game::State::State(const State& cp) : x(cp.x), y(cp.y) {}
-
-Game::State::State(int x, int y, int player) : x(x), y(y), player(player) {}
-
 // Board implementation - -- - - - - - - - - - - - --
 Game::Board::Board() : board(t_board()) {
 	// by default, board is empty, so fill the empty position tab with all possible position
-	for (int i = 0; i < Const::TABSIZE; ++i) {
-		for (int j = 0; j < Const::TABSIZE; ++j) {
+	for (uint8_t i = 0; i < Const::TABSIZE; ++i) {
+		for (uint8_t j = 0; j < Const::TABSIZE; ++j) {
 			emptyPos.push_back({ j, i });
 		}
 	}
@@ -182,4 +185,14 @@ const Game::t_board& Game::Board::getBoard() const {
 
 const std::vector<Position> & const Game::Board::getEmptyPosition() const {
 	return emptyPos;
+}
+
+bool Game::Board::operator==(const Position &p) const
+{
+	return x == p.x && y == p.y;
+}
+
+bool Game::Board::operator!=(const Position &p) const
+{
+	return !(p.x == x && p.y == y);
 }

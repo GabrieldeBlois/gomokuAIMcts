@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Node.h"
-#include "Game.h"
+#include "State.h"
 #include <vector>
+#include "Random.h"
 
 class Node
 {
 public:
-	explicit Node(const Game::State &state, Node *parent = nullptr) :
+	Node(const State &state, Node *parent = nullptr) :
 		state(state),
 		_parent(parent),
 		_child(std::vector<Node>())
@@ -26,12 +26,42 @@ public:
 	{
 	}
 
+	Node & getRandomChild() {
+		return _child[xorshf96() % _child.size()];
+	}
+	
+
 	// I know its dirty to make a public member like this but its a little school projet btw
 	// so as it is more optimized ...
-	Game::State state;
+	State state;
 
 	// the parent node should be a pointer since reference cannot be null;
 	Node *_parent;
 	std::vector<Node> _child;
+
+	int getVisitCount() const {
+		return _visitCount;
+	}
+
+	int getWinScore() const {
+		return _winScore;
+	}
+
+	void incrementWinScore() { _winScore += 10; }
+
+	void incrementVisit() { ++_visitCount; }
+
+	Node & getChildWithMaxScore() {
+		Node & result = _child.front();
+		for (auto c : _child) {
+			if (c._visitCount > result._visitCount)
+				result = c;
+		}
+		return result;
+	}
+
+private:
+	int _visitCount = 0;
+	int _winScore = 0;
 };
 

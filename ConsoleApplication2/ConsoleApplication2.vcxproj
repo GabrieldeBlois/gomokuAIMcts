@@ -143,13 +143,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Board.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Constant.h" />
+    <ClInclude Include="Mcts.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="Random.h" />
+    <ClInclude Include="State.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Uct.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConsoleApplication2.cpp" />
