@@ -126,7 +126,7 @@ STATE Game::simulatePlayout(Node const *node) const
 	uint8_t player = TOGGLE_PLAYER(node->state.player);
 
 	// populate the simulation board with the tree branch being processed
-	while (node->_parent) {
+	while (node->_parent != nullptr) {
 		State const &st = node->state;
 		_simboard.performMove({ st.x, st.y }, st.player);
 		node = node->_parent;
@@ -162,7 +162,7 @@ STATE Game::simulatePlayout(Node const *node) const
 // Board implementation - -- - - - - - - - - - - - --
 Game::Board::Board() : board(t_board()) {
 	// by default, board is empty, so fill the empty position tab with all possible position
-	for (uint8_t i = 0; i < Const::TABSIZE; ++i) {
+		for (uint8_t i = 0; i < Const::TABSIZE; ++i) {
 		for (uint8_t j = 0; j < Const::TABSIZE; ++j) {
 			emptyPos.push_back({ j, i });
 		}

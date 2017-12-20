@@ -27,7 +27,8 @@ public:
 	}
 
 	Node & getRandomChild() {
-		return _child[xorshf96() % _child.size()];
+		unsigned long test = xorshf96() % _child.size();
+		return _child[test];
 	}
 	
 

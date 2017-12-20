@@ -8,8 +8,10 @@
 class Mcts {
 public:
 	Position findNextMove(const Game &game, uint8_t player) {
-		Node rootNode({ 0, 0, TOGGLE_PLAYER(player), STATE::IN_PROGRESS }, nullptr);
-
+		Node rootNode = Node(State(0, 0, TOGGLE_PLAYER(player)), nullptr);
+		//rootNode._parent = nullptr;
+		//rootNode.state.player = TOGGLE_PLAYER(player);
+		//rootNode.state.state = STATE::IN_PROGRESS;
 		auto start = std::chrono::system_clock::now();
 		
 		auto counter = 0;

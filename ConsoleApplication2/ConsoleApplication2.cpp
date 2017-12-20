@@ -14,7 +14,7 @@
 
 int main()
 {
-	Game game = game;
+	Game game = Game();
 	Mcts ia = Mcts();
 	uint8_t player = 1;
 	while (1) {
