@@ -128,6 +128,9 @@ STATE Game::simulatePlayout(Node const *node) const
 	// populate the simulation board with the tree branch being processed
 	while (node->_parent != nullptr) {
 		State const &st = node->state;
+		//Position tmp;
+		//tmp.x = st.x;
+		//tmp.y = st.y;
 		_simboard.performMove({ st.x, st.y }, st.player);
 		node = node->_parent;
 	}
