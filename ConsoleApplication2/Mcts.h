@@ -44,10 +44,10 @@ public:
 		}
 		std::cout << "Done with : " << counter << " simulations";
 
-		Node & tmpResult = rootNode->getChildWithMaxScore();
+		Node * tmpResult = rootNode->getChildWithMaxScore();
 
 		// return it as position
-		return { tmpResult.state.x, tmpResult.state.y };
+		return { tmpResult->state.x, tmpResult->state.y };
 	}
 
 	void backPropagation(Node * tmp, STATE s) {

@@ -53,12 +53,14 @@ public:
 
 	void incrementVisit() { ++_visitCount; }
 
-	Node & getChildWithMaxScore() {
-		Node & result = _child.front();
+	Node * getChildWithMaxScore() {
+		Node * result = &_child.front();
+		
 		for (auto c : _child) {
-			if (c._visitCount > result._visitCount)
-				result = c;
+			if (c._visitCount > result->_visitCount)
+				result = &c;
 		}
+
 		return result;
 	}
 
