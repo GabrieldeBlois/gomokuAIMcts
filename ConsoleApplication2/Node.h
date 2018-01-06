@@ -7,7 +7,7 @@
 class Node
 {
 public:
-	Node(const State &state, Node *parent = nullptr) :
+	explicit Node(const State &state, Node *parent = nullptr) :
 		state(state),
 		_parent(parent),
 		_child(std::vector<Node>())
@@ -27,8 +27,7 @@ public:
 	}
 
 	Node * getRandomChild() {
-		
-		unsigned long test = xorshf96() % _child.size();
+		auto test = xorshf96() % _child.size();
 		return &_child[test];
 	}
 	
@@ -54,13 +53,13 @@ public:
 	void incrementVisit() { ++_visitCount; }
 
 	Node * getChildWithMaxScore() {
-		Node * result = &_child.front();
+		auto result = &_child.front();
 		
-		for (auto c : _child) {
-			if (c._visitCount > result->_visitCount)
-				result = &c;
+		for (auto i = 0; i < _child.size(); ++i)
+		{
+			if (_child[i]._winScore > result->_winScore)
+				result = &_child[i];
 		}
-
 		return result;
 	}
 

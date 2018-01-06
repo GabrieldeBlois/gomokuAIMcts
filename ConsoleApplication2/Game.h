@@ -5,7 +5,7 @@
 #include "Position.h"
 #include "State.h"
 
-#define TOGGLE_PLAYER(x) (3 - x)
+#define TOGGLE_PLAYER(x) ((3 - x))
 
 class Game
 {
@@ -52,7 +52,7 @@ public:
 
 
 	static STATE checkState(t_board const &tab);
-	void dumpBoard(const t_board& b) const;
+	static void dumpBoard(const t_board& b);
 
 	// the board tow play actual game
 	Board board;

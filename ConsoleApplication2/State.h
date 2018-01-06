@@ -13,10 +13,25 @@ enum STATE
 
 class State {
 public:
-	State(int x, int y, int player, STATE state = STATE::IN_PROGRESS) : x(x), y(y), player(player), state(state) {}
-	State(const State &cp) : x(cp.x), y(cp.y), state(cp.state) {}
+	State(uint8_t x,
+		uint8_t y,
+		uint8_t player,
+		STATE state = STATE::IN_PROGRESS) :
+		x(x),
+		y(y),
+		player(player),
+		state(state) {}
+
+	State(const State &cp) :
+		x(cp.x),
+		y(cp.y),
+		player(cp.player),
+		state(cp.state)
+	{
+	}
+
 	uint8_t x;
 	uint8_t y;
-	int player;
+	uint8_t player;
 	STATE state;
 };

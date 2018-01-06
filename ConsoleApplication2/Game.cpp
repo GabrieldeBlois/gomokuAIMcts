@@ -106,7 +106,8 @@ STATE Game::checkState(const t_board &tab)
 	return static_cast<STATE>(resultWin);
 }
 
-void Game::dumpBoard(const Game::t_board &b) const {
+void Game::dumpBoard(const Game::t_board &b)
+{
 	for (auto i = 0; i < Const::TABSIZE; ++i) {
 		for (auto j = 0; j < Const::TABSIZE; ++j) {
 			std::cout << static_cast<int>(b[i][j]) << " ";
@@ -127,7 +128,7 @@ STATE Game::simulatePlayout(Node const *node) const
 
 	// populate the simulation board with the tree branch being processed
 	while (node->_parent != nullptr) {
-		State const &st = node->state;
+		auto const & st = node->state;
 		//Position tmp;
 		//tmp.x = st.x;
 		//tmp.y = st.y;
@@ -136,7 +137,7 @@ STATE Game::simulatePlayout(Node const *node) const
 	}
 
 	// get all empty positions of the board
-	const std::vector<Position> & emptyPos = _simboard.getEmptyPosition();
+	const auto& emptyPos = _simboard.getEmptyPosition();
 
 	//auto counter = 0;
 
@@ -146,19 +147,21 @@ STATE Game::simulatePlayout(Node const *node) const
 		player = TOGGLE_PLAYER(player);
 
 		// random seed
-		unsigned long test = xorshf96() % emptyPos.size();
+		auto test = xorshf96() % emptyPos.size();
 
 		// perform the move
 		_simboard.performMove(emptyPos[test], player);
 
 		auto result = checkState(_simboard.getBoard());
 		if (result != STATE::IN_PROGRESS)
+		{
+
 			return result;
+		}
 		//if (counter > 20)
 		//	return STATE::IN_PROGRESS;
 		//++counter;
 	}
-
 	return DRAW;
 }
 

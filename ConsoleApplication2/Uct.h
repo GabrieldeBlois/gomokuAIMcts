@@ -11,21 +11,21 @@
 class Uct {
 public:
 	static double uctValue(int totVisit, double node, int nodeVisit) {
-		if (nodeVisit == 0)
-			return std::numeric_limits<int>::max();
-		
-		return (node / (double)nodeVisit) + 1.41f * sqrt(log(totVisit) / (double)nodeVisit);
+		return (nodeVisit == 0) ? 
+			std::numeric_limits<int>::max() :
+			(node / static_cast<double>(nodeVisit)) + 1.41f * sqrt(log(totVisit) / static_cast<double>(nodeVisit));
 	}
 
 	static Node * findBestNodeWithUCT(Node * node) {
-		int parentVisit = node->getVisitCount();
+		auto parentVisit = node->getVisitCount();
 
-		Node * result = &node->_child.front();
+		auto result = &node->_child.front();
 
 		// in the case where the first node is the biggest UCT value possible, no need to enter the loop
 		if (uctValue(parentVisit, result->getWinScore(), result->getVisitCount()) == std::numeric_limits<int>::max())
 			return result;
 
+		/*
 		double savedUctValue = 0;
 		for (auto c : node->_child) {
 			double tmpDPrime = 0;
@@ -35,7 +35,21 @@ public:
 				savedUctValue = tmpDPrime;
 				result = &c;
 			}
+		}*/
+
+		double savedUctValue = 0;
+		for (uint8_t i = 0; i < node->_child.size(); ++i)
+		{
+			double tmpDPrime = 0;
+			if ((tmpDPrime = uctValue(parentVisit, node->_child[i].getWinScore(), node->_child[i].getVisitCount())) > savedUctValue) {
+				if (tmpDPrime == std::numeric_limits<int>::max())
+					return &node->_child[i];
+				savedUctValue = tmpDPrime;
+				result = &node->_child[i];
+			}
+
 		}
+
 		/*
 		for (std::vector<Node>::iterator it = node->_child.begin(); it != node->_child.end(); ++it) {
 			double tmpDPrime = 0;

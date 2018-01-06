@@ -7,8 +7,9 @@
 
 class Mcts {
 public:
-	Position findNextMove(const Game &game, uint8_t player) {
-		Node * rootNode = &Node(State(0, 0, TOGGLE_PLAYER(player)), nullptr);
+	Position findNextMove(const Game &game, uint8_t player) const
+	{
+		auto rootNode (Node(State(0, 0, TOGGLE_PLAYER(player)), nullptr));
 		//rootNode._parent = nullptr;
 		//rootNode.state.player = TOGGLE_PLAYER(player);
 		//rootNode.state.state = STATE::IN_PROGRESS;
@@ -25,7 +26,7 @@ public:
 		while (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - start).count() < 4) {
 		
 			// selection
-			Node * targetNode = selectTargetNode(rootNode);
+			auto targetNode = selectTargetNode(&rootNode);
 
 			// expansion
 			if (targetNode->state.state == STATE::IN_PROGRESS)
@@ -42,15 +43,15 @@ public:
 
 			++counter;
 		}
-		std::cout << "Done with : " << counter << " simulations";
+		std::cout << "Done with : " << counter << " simulations" << std::endl;
 
-		Node * tmpResult = rootNode->getChildWithMaxScore();
+		auto tmpResult = rootNode.getChildWithMaxScore();
 
 		// return it as position
 		return { tmpResult->state.x, tmpResult->state.y };
 	}
 
-	void backPropagation(Node * tmp, STATE s) {
+	static void backPropagation(Node * tmp, STATE s) {
 
 		while (tmp) {
 			tmp->incrementVisit();
@@ -60,13 +61,13 @@ public:
 		}
 	}
 
-	void expandNode(Node * targetNode, const Game & g) {
+	static void expandNode(Node * targetNode, const Game & g) {
 		for (auto p : g.board.getEmptyPosition()) {
 			targetNode->_child.push_back(Node(State(p.x, p.y, TOGGLE_PLAYER(targetNode->state.player)), targetNode));
 		}
 	}
 
-	Node * selectTargetNode(Node * root) {
+	static Node * selectTargetNode(Node * root) {
 		while (root->_child.size() != 0) {
 			root = Uct::findBestNodeWithUCT(root);
 		}
